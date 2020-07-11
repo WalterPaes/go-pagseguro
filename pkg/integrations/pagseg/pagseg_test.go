@@ -40,7 +40,7 @@ func TestCreateCharge(t *testing.T) {
 	paymentHelper := func() *ChargeResponse {
 		pagseg := NewPagSeguro(&HttpRequesterMock{})
 
-		response, err := pagseg.Pay(chargeRequest)
+		response, err := pagseg.CreateCharge(chargeRequest)
 		if err != nil {
 			t.Error(err)
 		}
@@ -99,6 +99,26 @@ func TestCapture(t *testing.T) {
 		response := paymentHelper()
 		if response.PaymentResponse.Message != successMessage {
 			t.Errorf("It was expected '%v' and got '%v'", successMessage, response.PaymentResponse.Message)
+		}
+	})
+}
+
+func TestGetCharge(t *testing.T) {
+	id := "CHAR_A024DA52-C821-4A94-816F-803AD5307823"
+	paymentHelper := func() *ChargeResponse {
+		pagseg := NewPagSeguro(&HttpRequesterMock{})
+
+		response, err := pagseg.GetCharge(id)
+		if err != nil {
+			t.Error(err)
+		}
+		return response
+	}
+
+	t.Run("Assert Id", func(t *testing.T) {
+		response := paymentHelper()
+		if response.ID != id {
+			t.Errorf("It was expected '%v' and got '%v'", id, response.ID)
 		}
 	})
 }

@@ -18,7 +18,7 @@ const (
 )
 
 type PagSeguro interface {
-	Pay(request ChargeRequest) (*ChargeResponse, error)
+	CreateCharge(request ChargeRequest) (*ChargeResponse, error)
 	Capture(id string, request AmountRequest) (*ChargeResponse, error)
 	GetCharge(id string) (*ChargeResponse, error)
 	CancelAndRefund(id string, request AmountRequest) (*ChargeResponse, error)
@@ -42,7 +42,7 @@ func NewPagSeguro(requester net.Requester) PagSeguro {
 	}
 }
 
-func (pg pagseguro) Pay(request ChargeRequest) (*ChargeResponse, error) {
+func (pg pagseguro) CreateCharge(request ChargeRequest) (*ChargeResponse, error) {
 	payload, err := json.Marshal(request)
 	if err != nil {
 		return nil, err
@@ -113,7 +113,7 @@ func (pg pagseguro) CancelAndRefund(id string, request AmountRequest) (*ChargeRe
 }
 
 func (pg pagseguro) doHttpRequest(method, endpoint string, payload []byte) (*ChargeResponse, int, error) {
-	statusCode := 500
+	statusCode := http.StatusInternalServerError
 	req, err := http.NewRequest(
 		method,
 		pg.baseUrl+endpoint,

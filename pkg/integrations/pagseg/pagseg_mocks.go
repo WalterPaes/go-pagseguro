@@ -26,7 +26,7 @@ func (r *HttpRequesterMock) SetHeaders(headers map[string]string) net.Requester 
 
 func (_ HttpRequesterMock) DoRequest(r *http.Request) (*http.Response, error) {
 	var body string
-	statusCode := 201
+	statusCode := http.StatusCreated
 
 	paths := strings.Split(r.URL.Path, "/")
 
@@ -39,7 +39,7 @@ func (_ HttpRequesterMock) DoRequest(r *http.Request) (*http.Response, error) {
 		body = CancelAndRefundOkResponse
 	default:
 		body = GetChargeOkResponse
-		statusCode = 200
+		statusCode = http.StatusOK
 	}
 
 	response := &http.Response{
