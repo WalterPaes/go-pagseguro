@@ -33,6 +33,7 @@ var (
 	amountRequest = AmountRequest{Amount: amount{Value: 1000}}
 
 	statusPaid = "PAID"
+	statusCanceled = "CANCELED"
 	successMessage = "SUCESSO"
 )
 
@@ -119,6 +120,33 @@ func TestGetCharge(t *testing.T) {
 		response := paymentHelper()
 		if response.ID != id {
 			t.Errorf("It was expected '%v' and got '%v'", id, response.ID)
+		}
+	})
+}
+
+func TestCancelAndRefund(t *testing.T) {
+	id := "CHAR_be4545a8-8e62-4d44-85fa-66ccaf2329af"
+	paymentHelper := func() *ChargeResponse {
+		pagseg := NewPagSeguro(&HttpRequesterMock{})
+
+		response, err := pagseg.CancelAndRefund(id, amountRequest)
+		if err != nil {
+			t.Error(err)
+		}
+		return response
+	}
+
+	t.Run("Assert Id", func(t *testing.T) {
+		response := paymentHelper()
+		if response.ID != id {
+			t.Errorf("It was expected '%v' and got '%v'", id, response.ID)
+		}
+	})
+
+	t.Run("Assert Status", func(t *testing.T) {
+		response := paymentHelper()
+		if response.Status != statusCanceled {
+			t.Errorf("It was expected '%v' and got '%v'", statusCanceled, response.Status)
 		}
 	})
 }
