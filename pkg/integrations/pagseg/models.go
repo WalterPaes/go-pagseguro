@@ -1,5 +1,9 @@
 package pagseg
 
+type paymentType string
+
+var CreditCard paymentType = "CREDIT_CARD"
+
 type ChargeRequest struct {
 	ReferenceID      string    `json:"reference_id"`
 	Description      string    `json:"description"`
@@ -19,7 +23,7 @@ type ChargeResponse struct {
 	PaymentResponse  paymentResponse `json:"payment_response,omitempty"`
 	PaymentMethod    paymethod       `json:"payment_method,omitempty"`
 	Links            []link          `json:"links,omitempty"`
-	NotificationUrls []string   `json:"notification_urls,omitempty"`
+	NotificationUrls []string        `json:"notification_urls,omitempty"`
 }
 
 type AmountRequest struct {
@@ -39,10 +43,10 @@ type summary struct {
 }
 
 type paymethod struct {
-	Type         string `json:"type,omitempty"`
-	Installments int    `json:"installments,omitempty"`
-	Capture      bool   `json:"capture,omitempty"`
-	Card         card   `json:"card,omitempty"`
+	Type         paymentType `json:"type,omitempty"`
+	Installments int         `json:"installments,omitempty"`
+	Capture      bool        `json:"capture,omitempty"`
+	Card         card        `json:"card,omitempty"`
 }
 
 type card struct {
@@ -67,6 +71,6 @@ type link struct {
 
 type paymentResponse struct {
 	Code      interface{} `json:"code,omitempty"`
-	Message   string `json:"message,omitempty"`
-	Reference string `json:"reference,omitempty"`
+	Message   string      `json:"message,omitempty"`
+	Reference string      `json:"reference,omitempty"`
 }

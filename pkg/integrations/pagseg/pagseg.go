@@ -18,9 +18,16 @@ const (
 )
 
 type PagSeguro interface {
+	// Reference: https://dev.pagseguro.uol.com.br/v4.0/reference/cobranca-criando-uma-cobranca#cobrando-cartao-em-um-passo
 	CreateCharge(request ChargeRequest) (*ChargeResponse, error)
+
+	// Reference: https://dev.pagseguro.uol.com.br/v4.0/reference/cobranca-capturando-uma-cobranca
 	Capture(id string, request AmountRequest) (*ChargeResponse, error)
+
+	// Reference: https://dev.pagseguro.uol.com.br/v4.0/reference/cobranca-consultando-uma-cobranca
 	GetCharge(id string) (*ChargeResponse, error)
+
+	// Reference: https://dev.pagseguro.uol.com.br/v4.0/reference/cobranca-reembolsando-uma-cobranca#devolvendo-uma-cobranca-paga-pap
 	CancelAndRefund(id string, request AmountRequest) (*ChargeResponse, error)
 }
 
@@ -30,6 +37,7 @@ type pagseguro struct {
 	headers       map[string]string
 }
 
+// Struct Constructor
 func NewPagSeguro(requester net.Requester) PagSeguro {
 	return &pagseguro{
 		HttpRequester: requester,
@@ -136,7 +144,6 @@ func (pg pagseguro) doHttpRequest(method, endpoint string, payload []byte) (*Cha
 	var response *ChargeResponse
 	err = json.Unmarshal(body, &response)
 	if err != nil {
-		fmt.Println(err)
 		return nil, statusCode, err
 	}
 
