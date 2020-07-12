@@ -25,6 +25,7 @@ type HttpRequesterMock struct {
 }
 
 func (r *HttpRequesterMock) SetHeaders(headers map[string]string) net.Requester {
+	r.Headers = headers
 	return r
 }
 
