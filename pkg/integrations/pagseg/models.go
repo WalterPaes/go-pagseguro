@@ -24,6 +24,7 @@ type ChargeResponse struct {
 	PaymentMethod    paymethod       `json:"payment_method,omitempty"`
 	Links            []link          `json:"links,omitempty"`
 	NotificationUrls []string        `json:"notification_urls,omitempty"`
+	ErrorMessages    []errorMessage  `json:"error_messages,omitempty"`
 }
 
 type AmountRequest struct {
@@ -73,4 +74,11 @@ type paymentResponse struct {
 	Code      interface{} `json:"code,omitempty"`
 	Message   string      `json:"message,omitempty"`
 	Reference string      `json:"reference,omitempty"`
+}
+
+type errorMessage struct {
+	Code          string `json:"code,omitempty"`
+	Description   string `json:"description,omitempty"`
+	ParameterName string `json:"parameter_name,omitempty"`
+	Info          string `json:"info,omitempty"`
 }

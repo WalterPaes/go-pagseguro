@@ -1,6 +1,7 @@
 package pagseg
 
 import (
+	"GoPagSeguro/pkg/core/net"
 	"testing"
 )
 
@@ -39,8 +40,8 @@ var (
 )
 
 func TestCreateCharge(t *testing.T) {
-	paymentHelper := func() *ChargeResponse {
-		pagseg := NewPagSeguro(&HttpRequesterMock{})
+	paymentHelper := func(requester net.Requester) *ChargeResponse {
+		pagseg := NewPagSeguro(requester)
 
 		response, err := pagseg.CreateCharge(chargeRequest)
 		if err != nil {
@@ -50,37 +51,60 @@ func TestCreateCharge(t *testing.T) {
 	}
 
 	t.Run("Assert Id", func(t *testing.T) {
-		response := paymentHelper()
+		response := paymentHelper(&HttpRequesterMockSuccess{})
 		if response.ID != PaymentId {
 			t.Errorf("It was expected '%v' and got '%v'", PaymentId, response.ID)
+		}
+
+		if len(response.ErrorMessages) > 0 {
+			t.Error("Errors was not expected")
 		}
 	})
 
 	t.Run("Assert ReferenceId", func(t *testing.T) {
-		response := paymentHelper()
+		response := paymentHelper(&HttpRequesterMockSuccess{})
 		if response.ReferenceID != chargeRequest.ReferenceID {
 			t.Errorf("It was expected '%v' and got '%v'", chargeRequest.ReferenceID, response.ReferenceID)
+		}
+
+		if len(response.ErrorMessages) > 0 {
+			t.Error("Errors was not expected")
 		}
 	})
 
 	t.Run("Assert Status", func(t *testing.T) {
-		response := paymentHelper()
+		response := paymentHelper(&HttpRequesterMockSuccess{})
 		if response.Status != statusPaid {
 			t.Errorf("It was expected '%v' and got '%v'", statusPaid, response.Status)
+		}
+
+		if len(response.ErrorMessages) > 0 {
+			t.Error("Errors was not expected")
 		}
 	})
 
 	t.Run("Assert Message", func(t *testing.T) {
-		response := paymentHelper()
+		response := paymentHelper(&HttpRequesterMockSuccess{})
 		if response.PaymentResponse.Message != successMessage {
 			t.Errorf("It was expected '%v' and got '%v'", successMessage, response.PaymentResponse.Message)
+		}
+
+		if len(response.ErrorMessages) > 0 {
+			t.Error("Errors was not expected")
+		}
+	})
+
+	t.Run("Bad Request", func(t *testing.T) {
+		response := paymentHelper(&HttpRequesterMockFail{})
+		if len(response.ErrorMessages) < 1 {
+			t.Error("Errors was expected")
 		}
 	})
 }
 
 func TestCapture(t *testing.T) {
 	paymentHelper := func() *ChargeResponse {
-		pagseg := NewPagSeguro(&HttpRequesterMock{})
+		pagseg := NewPagSeguro(&HttpRequesterMockSuccess{})
 
 		response, err := pagseg.Capture(PaymentId, amountRequest)
 		if err != nil {
@@ -94,12 +118,20 @@ func TestCapture(t *testing.T) {
 		if response.ID != PaymentId {
 			t.Errorf("It was expected '%v' and got '%v'", PaymentId, response.ID)
 		}
+
+		if len(response.ErrorMessages) > 0 {
+			t.Error("Errors was not expected")
+		}
 	})
 
 	t.Run("Assert Status", func(t *testing.T) {
 		response := paymentHelper()
 		if response.Status != statusPaid {
 			t.Errorf("It was expected '%v' and got '%v'", statusPaid, response.Status)
+		}
+
+		if len(response.ErrorMessages) > 0 {
+			t.Error("Errors was not expected")
 		}
 	})
 
@@ -108,12 +140,16 @@ func TestCapture(t *testing.T) {
 		if response.PaymentResponse.Message != successMessage {
 			t.Errorf("It was expected '%v' and got '%v'", successMessage, response.PaymentResponse.Message)
 		}
+
+		if len(response.ErrorMessages) > 0 {
+			t.Error("Errors was not expected")
+		}
 	})
 }
 
 func TestGetCharge(t *testing.T) {
 	paymentHelper := func() *ChargeResponse {
-		pagseg := NewPagSeguro(&HttpRequesterMock{})
+		pagseg := NewPagSeguro(&HttpRequesterMockSuccess{})
 
 		response, err := pagseg.GetCharge(PaymentId)
 		if err != nil {
@@ -127,12 +163,16 @@ func TestGetCharge(t *testing.T) {
 		if response.ID != PaymentId {
 			t.Errorf("It was expected '%v' and got '%v'", PaymentId, response.ID)
 		}
+
+		if len(response.ErrorMessages) > 0 {
+			t.Error("Errors was not expected")
+		}
 	})
 }
 
 func TestCancelAndRefund(t *testing.T) {
 	paymentHelper := func() *ChargeResponse {
-		pagseg := NewPagSeguro(&HttpRequesterMock{})
+		pagseg := NewPagSeguro(&HttpRequesterMockSuccess{})
 
 		response, err := pagseg.CancelAndRefund(PaymentId, amountRequest)
 		if err != nil {
@@ -146,12 +186,20 @@ func TestCancelAndRefund(t *testing.T) {
 		if response.ID != PaymentId {
 			t.Errorf("It was expected '%v' and got '%v'", PaymentId, response.ID)
 		}
+
+		if len(response.ErrorMessages) > 0 {
+			t.Error("Errors was not expected")
+		}
 	})
 
 	t.Run("Assert Status", func(t *testing.T) {
 		response := paymentHelper()
 		if response.Status != statusCanceled {
 			t.Errorf("It was expected '%v' and got '%v'", statusCanceled, response.Status)
+		}
+
+		if len(response.ErrorMessages) > 0 {
+			t.Error("Errors was not expected")
 		}
 	})
 }

@@ -4,7 +4,6 @@ import (
 	"GoPagSeguro/pkg/core/net"
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -56,13 +55,9 @@ func (pg pagseguro) CreateCharge(request ChargeRequest) (*ChargeResponse, error)
 		return nil, err
 	}
 
-	response, statusCode, err := pg.doHttpRequest(http.MethodPost, ChargeEndpoint, payload)
+	response, err := pg.doHttpRequest(http.MethodPost, ChargeEndpoint, payload)
 	if err != nil {
 		return nil, err
-	}
-
-	if statusCode != http.StatusCreated {
-		return nil, errors.New(response.PaymentResponse.Message)
 	}
 
 	return response, nil
@@ -75,13 +70,9 @@ func (pg pagseguro) Capture(id string, request AmountRequest) (*ChargeResponse, 
 	}
 
 	endpoint := fmt.Sprintf(CaptureEndpoint, id)
-	response, statusCode, err := pg.doHttpRequest(http.MethodPost, endpoint, payload)
+	response, err := pg.doHttpRequest(http.MethodPost, endpoint, payload)
 	if err != nil {
 		return nil, err
-	}
-
-	if statusCode != http.StatusCreated {
-		return nil, errors.New(response.PaymentResponse.Message)
 	}
 
 	return response, nil
@@ -89,13 +80,9 @@ func (pg pagseguro) Capture(id string, request AmountRequest) (*ChargeResponse, 
 
 func (pg pagseguro) GetCharge(id string) (*ChargeResponse, error) {
 	endpoint := fmt.Sprintf(GetEndpoint, id)
-	response, statusCode, err := pg.doHttpRequest(http.MethodGet, endpoint, nil)
+	response, err := pg.doHttpRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
 		return nil, err
-	}
-
-	if statusCode != http.StatusOK {
-		return nil, errors.New(response.PaymentResponse.Message)
 	}
 
 	return response, nil
@@ -108,44 +95,39 @@ func (pg pagseguro) CancelAndRefund(id string, request AmountRequest) (*ChargeRe
 	}
 
 	endpoint := fmt.Sprintf(CancelEndpoint, id)
-	response, statusCode, err := pg.doHttpRequest(http.MethodPost, endpoint, payload)
+	response, err := pg.doHttpRequest(http.MethodPost, endpoint, payload)
 	if err != nil {
 		return nil, err
-	}
-
-	if statusCode != http.StatusCreated {
-		return nil, errors.New(response.PaymentResponse.Message)
 	}
 
 	return response, nil
 }
 
-func (pg pagseguro) doHttpRequest(method, endpoint string, payload []byte) (*ChargeResponse, int, error) {
-	statusCode := http.StatusInternalServerError
+func (pg pagseguro) doHttpRequest(method, endpoint string, payload []byte) (*ChargeResponse, error) {
 	req, err := http.NewRequest(
 		method,
 		pg.baseUrl+endpoint,
 		bytes.NewBuffer(payload),
 	)
 	if err != nil {
-		return nil, statusCode, err
+		return nil, err
 	}
 
 	resp, err := pg.HttpRequester.SetHeaders(pg.headers).DoRequest(req)
 	if err != nil {
-		return nil, statusCode, err
+		return nil, err
 	}
 
 	body, err := pg.HttpRequester.ReadBody(resp.Body)
 	if err != nil {
-		return nil, statusCode, err
+		return nil, err
 	}
 
 	var response *ChargeResponse
 	err = json.Unmarshal(body, &response)
 	if err != nil {
-		return nil, statusCode, err
+		return nil, err
 	}
 
-	return response, resp.StatusCode, err
+	return response, err
 }
