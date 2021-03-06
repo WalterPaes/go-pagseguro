@@ -12,3 +12,15 @@ type Charge struct {
 	NotificationUrls []string `json:"notification_urls,omitempty"`
 	Links            []Links  `json:"links,omitempty"`
 }
+
+func Authorization(charge Charge) (*Charge, error) {
+	return nil, nil
+}
+
+func Capture(charge Charge) (*Charge, error) {
+	return nil, nil
+}
+
+func GenerateBoleto(charge Charge) (*Charge, error) {
+	return nil, nil
+}
