@@ -1,9 +1,9 @@
 package pagseguro
 
 type PaymentMethod struct {
-	Type         string `json:"type"`
+	Type         string `json:"type,omitempty"`
 	Installments int    `json:"installments,omitempty"`
-	Capture      bool   `json:"capture,omitempty"`
-	Card         `json:"card"`
-	Boleto       `json:"boleto"`
+	Capture      bool   `json:"capture"`
+	*Card        `json:"card,omitempty"`
+	*Boleto      `json:"boleto,omitempty"`
 }

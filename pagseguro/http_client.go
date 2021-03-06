@@ -9,32 +9,38 @@ import (
 	"net/http"
 )
 
-type HttpClient struct {
+var httpStatusCodeMessage = map[int]string{
+	http.StatusBadRequest:       "Bad Request",
+	http.StatusUnauthorized:     "Unauthorized",
+	http.StatusForbidden:        "Forbidden",
+	http.StatusNotFound:         "Not Found",
+	http.StatusMethodNotAllowed: "MethodNotAllowed",
+}
+
+type HttpClient interface {
+	Get(path string, params map[string]string) ([]byte, error)
+	Post(path string, payload interface{}) ([]byte, error)
+}
+
+type Client struct {
 	client  *http.Client
 	url     string
 	headers map[string]string
-	token   string
-	body    interface{}
 }
 
-func NewHttpClient(url, token string, headers map[string]string) (*HttpClient, error) {
-	if url == "" || token == "" {
-		return nil, errors.New("URL and Token are required")
+func NewHttpClient(url string, headers map[string]string) (*Client, error) {
+	if url == "" {
+		return nil, errors.New("URL are required")
 	}
 
-	return &HttpClient{
+	return &Client{
 		client:  &http.Client{},
 		url:     url,
-		token:   token,
 		headers: headers,
 	}, nil
 }
 
-func (c *HttpClient) Get(path string, params map[string]string, body interface{}) (interface{}, error) {
-	if body != nil {
-		c.body = body
-	}
-
+func (c *Client) Get(path string, params map[string]string) ([]byte, error) {
 	url := c.url + path
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -48,22 +54,19 @@ func (c *HttpClient) Get(path string, params map[string]string, body interface{}
 	}
 	request.URL.RawQuery = query.Encode()
 
-	err = c.do(request)
+	body, err := c.do(request)
 	if err != nil {
 		return nil, err
 	}
 
-	return c.body, err
+	return body, err
 }
 
-func (c *HttpClient) Post(path string, payload, body interface{}) (interface{}, error) {
-	if body != nil {
-		c.body = body
-	}
-
+func (c *Client) Post(path string, payload interface{}) ([]byte, error) {
 	url := c.url + path
 
 	requestPayload, err := json.Marshal(payload)
+	log.Println("[HTTP_REQUEST:POST] Payload: " + string(requestPayload))
 	if err != nil {
 		log.Println("[HTTP_REQUEST:POST] Marshaling Payload Error: " + err.Error())
 		return nil, err
@@ -75,41 +78,38 @@ func (c *HttpClient) Post(path string, payload, body interface{}) (interface{}, 
 		return nil, err
 	}
 
-	err = c.do(request)
-	if err != nil {
-		return nil, err
-	}
-
-	return c.body, err
+	body, err := c.do(request)
+	return body, err
 }
 
-func (c *HttpClient) do(request *http.Request) error {
+func (c *Client) do(request *http.Request) ([]byte, error) {
 	for k, v := range c.headers {
 		request.Header.Set(k, v)
 	}
+	request.Header.Set("Content-Type", "application/json")
 
 	response, err := c.client.Do(request)
-	r, _ := json.Marshal(response)
-	log.Println("[HTTP_REQUEST:DO] Http Response: " + string(r))
 
 	if err != nil {
 		log.Println("[HTTP_REQUEST:DO] Request Error: " + err.Error())
-		return err
+		return nil, err
 	}
 
 	defer response.Body.Close()
 
 	data, err := ioutil.ReadAll(response.Body)
+	log.Println("[HTTP_REQUEST:DO] Response body: " + string(data))
 	if err != nil {
 		log.Println("[HTTP_REQUEST:DO] Read body Error: " + err.Error())
-		return err
+		return nil, err
 	}
 
-	err = json.Unmarshal(data, c.body)
-	if err != nil {
-		log.Println("[HTTP_REQUEST:DO] Unmarshaling Error: " + err.Error())
-		return err
+	if response.StatusCode >= http.StatusBadRequest && response.StatusCode < http.StatusInternalServerError {
+		if len(data) > 0 {
+			return data, errors.New(httpStatusCodeMessage[response.StatusCode])
+		}
+		return nil, errors.New(httpStatusCodeMessage[response.StatusCode])
 	}
 
-	return err
+	return data, err
 }
