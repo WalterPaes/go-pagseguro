@@ -13,7 +13,7 @@ func TestIntegration_Authorization(t *testing.T) {
 	if err != nil {
 		log.Fatal("A", err.Error())
 	}
-
+	
 	charge := Charge{
 		ReferenceID: "ex-00001",
 		Description: "Motivo da cobrança",
@@ -22,9 +22,10 @@ func TestIntegration_Authorization(t *testing.T) {
 			Currency: "BRL",
 		},
 		PaymentMethod: &PaymentMethod{
-			Type:         "CREDIT_CARD",
-			Installments: 1,
-			Capture:      false,
+			Type:           "CREDIT_CARD",
+			Installments:   1,
+			Capture:        false,
+			SoftDescriptor: "MyStore",
 			Card: &Card{
 				Number:       "4111111111111111",
 				ExpMonth:     "03",

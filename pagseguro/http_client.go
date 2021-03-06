@@ -9,14 +9,6 @@ import (
 	"net/http"
 )
 
-var httpStatusCodeMessage = map[int]string{
-	http.StatusBadRequest:       "Bad Request",
-	http.StatusUnauthorized:     "Unauthorized",
-	http.StatusForbidden:        "Forbidden",
-	http.StatusNotFound:         "Not Found",
-	http.StatusMethodNotAllowed: "MethodNotAllowed",
-}
-
 type HttpClient interface {
 	Get(path string, params map[string]string) ([]byte, error)
 	Post(path string, payload interface{}) ([]byte, error)
@@ -104,11 +96,11 @@ func (c *Client) do(request *http.Request) ([]byte, error) {
 		return nil, err
 	}
 
-	if response.StatusCode >= http.StatusBadRequest && response.StatusCode < http.StatusInternalServerError {
+	if response.StatusCode > http.StatusCreated {
 		if len(data) > 0 {
-			return data, errors.New(httpStatusCodeMessage[response.StatusCode])
+			return data, errors.New(response.Status)
 		}
-		return nil, errors.New(httpStatusCodeMessage[response.StatusCode])
+		return nil, errors.New(response.Status)
 	}
 
 	return data, err
