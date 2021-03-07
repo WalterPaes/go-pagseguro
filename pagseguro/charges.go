@@ -20,3 +20,7 @@ type Charge struct {
 		Message       string `json:"message,omitempty"`
 	} `json:"error_messages,omitempty"`
 }
+
+type Capture struct {
+	*Amount `json:"amount,omitempty"`
+}

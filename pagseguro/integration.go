@@ -2,6 +2,7 @@ package pagseguro
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -84,21 +85,20 @@ func (i *Integration) Authorization(card *CardCharge) (*Charge, error) {
 	return c, errResponse
 }
 
-//func (i *Integration) Capture(charge Charge) (*Charge, error) {
-//	payload, _ := json.Marshal(charge)
-//
-//	response, errResponse := i.http.Post(chargesEndpoint, payload)
-//
-//	var c *Charge
-//	err := json.Unmarshal(response, &c)
-//	if err != nil {
-//		log.Println("[PAGSEG:CAPTURE] Unmarshaling error: " + err.Error())
-//		return nil, err
-//	}
-//
-//	if errResponse != nil {
-//		log.Println("[PAGSEG:CAPTURE] Error: " + errResponse.Error())
-//	}
-//
-//	return c, errResponse
-//}
+func (i *Integration) Capture(chargeID string, capture *Capture) (*Charge, error) {
+	endpoint := fmt.Sprintf("%s/%s%s", chargesEndpoint, chargeID, captureEndpoint)
+	response, errResponse := i.http.Post(endpoint, capture)
+
+	var c *Charge
+	err := json.Unmarshal(response, &c)
+	if err != nil {
+		log.Println("[PAGSEG:CAPTURE] Unmarshaling error: " + err.Error())
+		return nil, err
+	}
+
+	if errResponse != nil {
+		log.Println("[PAGSEG:CAPTURE] Error: " + errResponse.Error())
+	}
+
+	return c, errResponse
+}

@@ -19,7 +19,7 @@ func TestIntegration_GenerateBoleto(t *testing.T) {
 	integration := getIntegration(t)
 
 	t.Run("SUCCESS", func(t *testing.T) {
-		expectedReferenceId := "ex-00001"
+		expectedReferenceId := "ex-00483001"
 
 		boleto := NewBoletoCharge(
 			expectedReferenceId,
@@ -82,6 +82,8 @@ func TestIntegration_Authorization(t *testing.T) {
 	integration := getIntegration(t)
 
 	t.Run("SUCCESS", func(t *testing.T) {
+		// TODO: remove soon
+		t.Skip()
 		expectedReferenceId := "jr-10101"
 
 		card := NewCardCharge(
@@ -127,6 +129,45 @@ func TestIntegration_Authorization(t *testing.T) {
 		}
 
 		if len(newCharge.ErrorMessages) < 1 {
+			t.Errorf("Errors was expected")
+		}
+	})
+}
+
+func TestIntegration_Capture(t *testing.T) {
+	integration := getIntegration(t)
+
+	t.Run("SUCCESS", func(t *testing.T) {
+		chargeID := "CHAR_D0292102-5E22-4F5A-9C4F-52C22F9E978B"
+		status := "PAID"
+		capture := &Capture{
+			&Amount{
+				Value:    1000,
+				Currency: "BRL",
+			},
+		}
+
+		newCapture, err := integration.Capture(chargeID, capture)
+		if err != nil {
+			t.Fatalf("ERRORS WAS NOT EXPECTED: %s", err.Error())
+		}
+
+		if newCapture.ID != chargeID {
+			t.Errorf("Expected: %s, Got: %s", chargeID, newCapture.ID)
+		}
+
+		if newCapture.Status != status {
+			t.Errorf("Expected: %s, Got: %s", status, newCapture.Status)
+		}
+	})
+
+	t.Run("ERROR", func(t *testing.T) {
+		capture, err := integration.Capture("abc", &Capture{})
+		if err == nil {
+			t.Error("Errors was expected")
+		}
+
+		if len(capture.ErrorMessages) < 1 {
 			t.Errorf("Errors was expected")
 		}
 	})
