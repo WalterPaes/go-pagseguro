@@ -64,6 +64,26 @@ func (i *Integration) GetCharge(chargeID string) (*Charge, error) {
 	return i.parseToCharge("GetCharge", response, errResponse)
 }
 
+func (i *Integration) GetChargesByReferenceId(referenceID string) ([]Charge, error) {
+	response, errResponse := i.http.Get(chargesEndpoint, map[string]string{
+		"reference_id": referenceID,
+	})
+
+	if errResponse != nil {
+		log.Println("[PAGSEG:GetChargesByReferenceId] Response Error: " + errResponse.Error())
+		return nil, errResponse
+	}
+
+	var c []Charge
+	err := json.Unmarshal(response, &c)
+	if err != nil {
+		log.Println("[PAGSEG:GetChargesByReferenceId] Unmarshaling error: " + err.Error())
+		return nil, err
+	}
+
+	return c, nil
+}
+
 func (i *Integration) parseToCharge(methodName string, response []byte, errResponse error) (*Charge, error) {
 	var c *Charge
 	err := json.Unmarshal(response, &c)

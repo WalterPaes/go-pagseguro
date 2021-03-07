@@ -200,3 +200,32 @@ func TestIntegration_GetCharge(t *testing.T) {
 		}
 	})
 }
+
+func TestIntegration_GetChargeByReferenceId(t *testing.T) {
+	integration := getIntegration(t)
+
+	t.Run("SUCCESS", func(t *testing.T) {
+		referenceID := "jr-00003"
+		chargeID := "CHAR_D0292102-5E22-4F5A-9C4F-52C22F9E978B"
+
+		charge, err := integration.GetChargesByReferenceId(referenceID)
+		if err != nil {
+			t.Fatalf("ERRORS WAS NOT EXPECTED: %s", err.Error())
+		}
+
+		if charge[0].ReferenceID != referenceID {
+			t.Errorf("Expected: %s, Got: %s", referenceID, charge[0].ReferenceID)
+		}
+
+		if charge[0].ID != chargeID {
+			t.Errorf("Expected: %s, Got: %s", chargeID, charge[0].ID)
+		}
+	})
+
+	t.Run("ERROR", func(t *testing.T) {
+		_, err := integration.GetChargesByReferenceId("abc")
+		if err == nil {
+			t.Error("Errors was expected")
+		}
+	})
+}
