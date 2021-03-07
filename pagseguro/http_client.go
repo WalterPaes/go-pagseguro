@@ -47,7 +47,7 @@ func (c *Client) Get(path string, params map[string]string) ([]byte, error) {
 	request.URL.RawQuery = query.Encode()
 
 	body, err := c.do(request)
-	if err != nil {
+	if err != nil && body == nil {
 		return nil, err
 	}
 

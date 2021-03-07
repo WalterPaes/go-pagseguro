@@ -45,59 +45,35 @@ func NewIntegration(url, token string) (*Integration, error) {
 
 func (i *Integration) GenerateBoleto(boleto *BoletoCharge) (*Charge, error) {
 	response, errResponse := i.http.Post(chargesEndpoint, boleto.Charge)
-	if response == nil && errResponse != nil {
-		log.Println("[PAGSEG:BOLETO] Error: " + errResponse.Error())
-		return nil, errResponse
-	}
-
-	var c *Charge
-	err := json.Unmarshal(response, &c)
-	if err != nil {
-		log.Println("[PAGSEG:BOLETO] Unmarshaling error: " + err.Error())
-		return nil, err
-	}
-
-	if errResponse != nil {
-		log.Println("[PAGSEG:BOLETO] Error: " + errResponse.Error())
-	}
-
-	return c, errResponse
+	return i.parseToCharge("GenerateBoleto", response, errResponse)
 }
 
 func (i *Integration) Authorization(card *CardCharge) (*Charge, error) {
 	response, errResponse := i.http.Post(chargesEndpoint, card.Charge)
-	if response == nil && errResponse != nil {
-		log.Println("[PAGSEG:AUTHORIZATION] Error: " + errResponse.Error())
-		return nil, errResponse
-	}
-
-	var c *Charge
-	err := json.Unmarshal(response, &c)
-	if err != nil {
-		log.Println("[PAGSEG:AUTHORIZATION] Unmarshaling error: " + err.Error())
-		return nil, err
-	}
-
-	if errResponse != nil {
-		log.Println("[PAGSEG:AUTHORIZATION] Error: " + errResponse.Error())
-	}
-
-	return c, errResponse
+	return i.parseToCharge("Authorization", response, errResponse)
 }
 
 func (i *Integration) Capture(chargeID string, capture *Capture) (*Charge, error) {
 	endpoint := fmt.Sprintf("%s/%s%s", chargesEndpoint, chargeID, captureEndpoint)
 	response, errResponse := i.http.Post(endpoint, capture)
+	return i.parseToCharge("Capture", response, errResponse)
+}
 
+func (i *Integration) GetCharge(chargeID string) (*Charge, error) {
+	response, errResponse := i.http.Get(chargesEndpoint+"/"+chargeID, nil)
+	return i.parseToCharge("GetCharge", response, errResponse)
+}
+
+func (i *Integration) parseToCharge(methodName string, response []byte, errResponse error) (*Charge, error) {
 	var c *Charge
 	err := json.Unmarshal(response, &c)
 	if err != nil {
-		log.Println("[PAGSEG:CAPTURE] Unmarshaling error: " + err.Error())
+		log.Println("[PAGSEG:" + methodName + "] Unmarshaling error: " + err.Error())
 		return nil, err
 	}
 
 	if errResponse != nil {
-		log.Println("[PAGSEG:CAPTURE] Error: " + errResponse.Error())
+		log.Println("[PAGSEG:" + methodName + "] Error: " + errResponse.Error())
 	}
 
 	return c, errResponse

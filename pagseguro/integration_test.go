@@ -172,3 +172,31 @@ func TestIntegration_Capture(t *testing.T) {
 		}
 	})
 }
+
+func TestIntegration_GetCharge(t *testing.T) {
+	integration := getIntegration(t)
+
+	t.Run("SUCCESS", func(t *testing.T) {
+		chargeID := "CHAR_D0292102-5E22-4F5A-9C4F-52C22F9E978B"
+
+		charge, err := integration.GetCharge(chargeID)
+		if err != nil {
+			t.Fatalf("ERRORS WAS NOT EXPECTED: %s", err.Error())
+		}
+
+		if charge.ID != chargeID {
+			t.Errorf("Expected: %s, Got: %s", chargeID, charge.ID)
+		}
+	})
+
+	t.Run("ERROR", func(t *testing.T) {
+		capture, err := integration.GetCharge("CHAR_A0000000-0A00-0A0A-0A0A-00A00A0A000A")
+		if err == nil {
+			t.Error("Errors was expected")
+		}
+
+		if len(capture.ErrorMessages) < 1 {
+			t.Errorf("Errors was expected")
+		}
+	})
+}

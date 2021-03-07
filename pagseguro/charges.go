@@ -13,6 +13,8 @@ type Charge struct {
 	NotificationUrls []string `json:"notification_urls,omitempty"`
 	Links            []Links  `json:"links,omitempty"`
 	Message          string   `json:"message,omitempty"`
+	Title            string   `json:"title"`
+	Detail           string   `json:"detail"`
 	ErrorMessages    []struct {
 		Code          string `json:"code,omitempty"`
 		Description   string `json:"description,omitempty"`
