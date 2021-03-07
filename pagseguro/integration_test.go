@@ -77,3 +77,57 @@ func TestIntegration_GenerateBoleto(t *testing.T) {
 		}
 	})
 }
+
+func TestIntegration_Authorization(t *testing.T) {
+	integration := getIntegration(t)
+
+	t.Run("SUCCESS", func(t *testing.T) {
+		expectedReferenceId := "jr-10101"
+
+		card := NewCardCharge(
+			expectedReferenceId,
+			"Teste",
+			1,
+			false,
+			&Amount{
+				Value:    1000,
+				Currency: "BRL",
+			},
+			&Card{
+				Number:       "4111111111111111",
+				ExpMonth:     "03",
+				ExpYear:      "2026",
+				SecurityCode: "123",
+				Holder: &Holder{
+					Name: "Waltin Junin",
+				},
+			},
+		)
+
+		newCharge, err := integration.Authorization(card)
+		if err != nil {
+			t.Fatalf("ERRORS WAS NOT EXPECTED: %s", err.Error())
+		}
+
+		if newCharge.ID == "" {
+			t.Errorf("An ID was expected")
+		}
+
+		if newCharge.ReferenceID != expectedReferenceId {
+			t.Errorf("Expected: %s, Got: %s", expectedReferenceId, newCharge.ReferenceID)
+		}
+	})
+
+	t.Run("ERROR", func(t *testing.T) {
+		card := NewCardCharge("", "", 0, false, &Amount{}, &Card{})
+
+		newCharge, err := integration.Authorization(card)
+		if err == nil {
+			t.Error("Errors was expected")
+		}
+
+		if len(newCharge.ErrorMessages) < 1 {
+			t.Errorf("Errors was expected")
+		}
+	})
+}

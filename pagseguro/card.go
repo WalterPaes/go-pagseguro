@@ -14,3 +14,21 @@ type Holder struct {
 	Email   string   `json:"email,omitempty"`
 	Address *Address `json:"address,omitempty"`
 }
+
+type CardCharge struct {
+	Charge
+}
+
+func NewCardCharge(refId, description string, installments int, capture bool, amount *Amount, card *Card) *CardCharge {
+	return &CardCharge{Charge{
+		ReferenceID: refId,
+		Description: description,
+		Amount:      amount,
+		PaymentMethod: &PaymentMethod{
+			Type:         CREDITCARD,
+			Installments: installments,
+			Capture:      capture,
+			Card:         card,
+		},
+	}}
+}

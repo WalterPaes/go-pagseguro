@@ -63,27 +63,27 @@ func (i *Integration) GenerateBoleto(boleto *BoletoCharge) (*Charge, error) {
 	return c, errResponse
 }
 
-//func (i *Integration) Authorization(charge Charge) (*Charge, error) {
-//	response, errResponse := i.http.Post(chargesEndpoint, charge)
-//	if response == nil && errResponse != nil {
-//		log.Println("[PAGSEG:AUTHORIZATION] Error: " + errResponse.Error())
-//		return nil, errResponse
-//	}
-//
-//	var c *Charge
-//	err := json.Unmarshal(response, &c)
-//	if err != nil {
-//		log.Println("[PAGSEG:AUTHORIZATION] Unmarshaling error: " + err.Error())
-//		return nil, err
-//	}
-//
-//	if errResponse != nil {
-//		log.Println("[PAGSEG:AUTHORIZATION] Error: " + errResponse.Error())
-//	}
-//
-//	return c, errResponse
-//}
-//
+func (i *Integration) Authorization(card *CardCharge) (*Charge, error) {
+	response, errResponse := i.http.Post(chargesEndpoint, card.Charge)
+	if response == nil && errResponse != nil {
+		log.Println("[PAGSEG:AUTHORIZATION] Error: " + errResponse.Error())
+		return nil, errResponse
+	}
+
+	var c *Charge
+	err := json.Unmarshal(response, &c)
+	if err != nil {
+		log.Println("[PAGSEG:AUTHORIZATION] Unmarshaling error: " + err.Error())
+		return nil, err
+	}
+
+	if errResponse != nil {
+		log.Println("[PAGSEG:AUTHORIZATION] Error: " + errResponse.Error())
+	}
+
+	return c, errResponse
+}
+
 //func (i *Integration) Capture(charge Charge) (*Charge, error) {
 //	payload, _ := json.Marshal(charge)
 //
