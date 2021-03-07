@@ -1,5 +1,10 @@
 package pagseguro
 
+const (
+	BOLETO     = "BOLETO"
+	CREDITCARD = "CREDIT_CARD"
+)
+
 type PaymentMethod struct {
 	Type           string `json:"type,omitempty"`
 	Installments   int    `json:"installments,omitempty"`

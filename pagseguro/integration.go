@@ -42,46 +42,63 @@ func NewIntegration(url, token string) (*Integration, error) {
 	}, nil
 }
 
-func (i *Integration) Authorization(charge Charge) (*Charge, error) {
-	response, errResponse := i.http.Post(chargesEndpoint, charge)
+func (i *Integration) GenerateBoleto(boleto *BoletoCharge) (*Charge, error) {
+	response, errResponse := i.http.Post(chargesEndpoint, boleto.Charge)
 	if response == nil && errResponse != nil {
-		log.Println("[PAGSEG:AUTHORIZATION] Error: " + errResponse.Error())
+		log.Println("[PAGSEG:BOLETO] Error: " + errResponse.Error())
 		return nil, errResponse
 	}
 
 	var c *Charge
 	err := json.Unmarshal(response, &c)
 	if err != nil {
-		log.Println("[PAGSEG:AUTHORIZATION] Unmarshaling error: " + err.Error())
+		log.Println("[PAGSEG:BOLETO] Unmarshaling error: " + err.Error())
 		return nil, err
 	}
 
 	if errResponse != nil {
-		log.Println("[PAGSEG:AUTHORIZATION] Error: " + errResponse.Error())
+		log.Println("[PAGSEG:BOLETO] Error: " + errResponse.Error())
 	}
 
 	return c, errResponse
 }
 
-func (i *Integration) Capture(charge Charge) (*Charge, error) {
-	payload, _ := json.Marshal(charge)
-
-	response, errResponse := i.http.Post(chargesEndpoint, payload)
-
-	var c *Charge
-	err := json.Unmarshal(response, &c)
-	if err != nil {
-		log.Println("[PAGSEG:CAPTURE] Unmarshaling error: " + err.Error())
-		return nil, err
-	}
-
-	if errResponse != nil {
-		log.Println("[PAGSEG:CAPTURE] Error: " + errResponse.Error())
-	}
-
-	return c, errResponse
-}
-
-func (i *Integration) GenerateBoleto(charge Charge) (*Charge, error) {
-	return nil, nil
-}
+//func (i *Integration) Authorization(charge Charge) (*Charge, error) {
+//	response, errResponse := i.http.Post(chargesEndpoint, charge)
+//	if response == nil && errResponse != nil {
+//		log.Println("[PAGSEG:AUTHORIZATION] Error: " + errResponse.Error())
+//		return nil, errResponse
+//	}
+//
+//	var c *Charge
+//	err := json.Unmarshal(response, &c)
+//	if err != nil {
+//		log.Println("[PAGSEG:AUTHORIZATION] Unmarshaling error: " + err.Error())
+//		return nil, err
+//	}
+//
+//	if errResponse != nil {
+//		log.Println("[PAGSEG:AUTHORIZATION] Error: " + errResponse.Error())
+//	}
+//
+//	return c, errResponse
+//}
+//
+//func (i *Integration) Capture(charge Charge) (*Charge, error) {
+//	payload, _ := json.Marshal(charge)
+//
+//	response, errResponse := i.http.Post(chargesEndpoint, payload)
+//
+//	var c *Charge
+//	err := json.Unmarshal(response, &c)
+//	if err != nil {
+//		log.Println("[PAGSEG:CAPTURE] Unmarshaling error: " + err.Error())
+//		return nil, err
+//	}
+//
+//	if errResponse != nil {
+//		log.Println("[PAGSEG:CAPTURE] Error: " + errResponse.Error())
+//	}
+//
+//	return c, errResponse
+//}
