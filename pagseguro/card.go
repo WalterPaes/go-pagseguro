@@ -16,11 +16,11 @@ type Holder struct {
 }
 
 type CardCharge struct {
-	Charge
+	*Charge
 }
 
-func NewCardCharge(refId, description string, installments int, capture bool, amount *Amount, card *Card) *CardCharge {
-	return &CardCharge{Charge{
+func NewCardCharge(refId, description string, installments int, capture bool, recurring *Recurring, amount *Amount, card *Card) *CardCharge {
+	return &CardCharge{&Charge{
 		ReferenceID: refId,
 		Description: description,
 		Amount:      amount,
@@ -30,5 +30,6 @@ func NewCardCharge(refId, description string, installments int, capture bool, am
 			Capture:      capture,
 			Card:         card,
 		},
+		Recurring: recurring,
 	}}
 }

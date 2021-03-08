@@ -49,6 +49,7 @@ func TestIntegration_Authorization(t *testing.T) {
 			"Teste",
 			1,
 			false,
+			nil,
 			&pagseguro.Amount{},
 			&pagseguro.Card{},
 		)
@@ -70,7 +71,7 @@ func TestIntegration_Authorization(t *testing.T) {
 	t.Run("ERROR", func(t *testing.T) {
 		integration := getIntegration(t, &HttpClientFail{})
 
-		card := pagseguro.NewCardCharge("", "", 0, false, &pagseguro.Amount{}, &pagseguro.Card{})
+		card := pagseguro.NewCardCharge("", "", 0, false, nil, &pagseguro.Amount{}, &pagseguro.Card{})
 
 		_, err := integration.Authorization(card)
 		if err == nil {
