@@ -19,7 +19,16 @@ type CardCharge struct {
 	*Charge
 }
 
-func NewCardCharge(refId, description string, installments int, capture bool, recurring *Recurring, amount *Amount, card *Card) *CardCharge {
+func NewCardCharge(
+	refId,
+	description string,
+	installments int,
+	capture bool,
+	recurring *Recurring,
+	amount *Amount,
+	card *Card,
+	notificationUrls []string,
+) *CardCharge {
 	return &CardCharge{&Charge{
 		ReferenceID: refId,
 		Description: description,
@@ -30,6 +39,7 @@ func NewCardCharge(refId, description string, installments int, capture bool, re
 			Capture:      capture,
 			Card:         card,
 		},
-		Recurring: recurring,
+		Recurring:        recurring,
+		NotificationUrls: notificationUrls,
 	}}
 }

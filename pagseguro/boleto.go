@@ -15,7 +15,7 @@ type BoletoCharge struct {
 	*Charge
 }
 
-func NewBoletoCharge(refId, description string, amount *Amount, boleto *Boleto) *BoletoCharge {
+func NewBoletoCharge(refId, description string, amount *Amount, boleto *Boleto, notificationUrls []string) *BoletoCharge {
 	return &BoletoCharge{&Charge{
 		ReferenceID: refId,
 		Description: description,
@@ -24,5 +24,6 @@ func NewBoletoCharge(refId, description string, amount *Amount, boleto *Boleto) 
 			Type:   BOLETO,
 			Boleto: boleto,
 		},
+		NotificationUrls: notificationUrls,
 	}}
 }

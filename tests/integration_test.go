@@ -14,7 +14,7 @@ func TestIntegration_GenerateBoleto(t *testing.T) {
 	t.Run("SUCCESS", func(t *testing.T) {
 		integration := getIntegration(t, &HttpClientSuccess{})
 
-		boleto := pagseguro.NewBoletoCharge(referenceID, "", &pagseguro.Amount{}, &pagseguro.Boleto{})
+		boleto := pagseguro.NewBoletoCharge(referenceID, "", &pagseguro.Amount{}, &pagseguro.Boleto{}, nil)
 
 		newCharge, err := integration.GenerateBoleto(boleto)
 		if err != nil {
@@ -52,6 +52,7 @@ func TestIntegration_Authorization(t *testing.T) {
 			nil,
 			&pagseguro.Amount{},
 			&pagseguro.Card{},
+			nil,
 		)
 
 		newCharge, err := integration.Authorization(card)
@@ -71,7 +72,15 @@ func TestIntegration_Authorization(t *testing.T) {
 	t.Run("ERROR", func(t *testing.T) {
 		integration := getIntegration(t, &HttpClientFail{})
 
-		card := pagseguro.NewCardCharge("", "", 0, false, nil, &pagseguro.Amount{}, &pagseguro.Card{})
+		card := pagseguro.NewCardCharge(
+			"",
+			"",
+			0,
+			false,
+			nil,
+			&pagseguro.Amount{},
+			&pagseguro.Card{},
+			nil)
 
 		_, err := integration.Authorization(card)
 		if err == nil {
