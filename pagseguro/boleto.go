@@ -12,11 +12,11 @@ type BoletoInstructionLines struct {
 }
 
 type BoletoCharge struct {
-	Charge
+	*Charge
 }
 
 func NewBoletoCharge(refId, description string, amount *Amount, boleto *Boleto) *BoletoCharge {
-	return &BoletoCharge{Charge{
+	return &BoletoCharge{&Charge{
 		ReferenceID: refId,
 		Description: description,
 		Amount:      amount,

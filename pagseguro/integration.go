@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/joho/godotenv"
 	"log"
-	"os"
 )
 
 var (
@@ -15,7 +14,7 @@ var (
 )
 
 type Integration struct {
-	http HttpClient
+	Http HttpClient
 }
 
 func init() {
@@ -25,12 +24,12 @@ func init() {
 	}
 }
 
-func NewIntegration(url, token string) (*Integration, error) {
+func NewIntegration(url, token, version string) (*Integration, error) {
 	httpClient, err := NewHttpClient(
 		url,
 		map[string]string{
 			"Authorization":     token,
-			"x-api-version":     os.Getenv("PAGSEG_API_VERSION"),
+			"x-api-version":     version,
 			"x-idempotency-key": "",
 		})
 
@@ -39,17 +38,17 @@ func NewIntegration(url, token string) (*Integration, error) {
 	}
 
 	return &Integration{
-		http: httpClient,
+		Http: httpClient,
 	}, nil
 }
 
 func (i *Integration) GenerateBoleto(boleto *BoletoCharge) (*Charge, error) {
-	response, errResponse := i.http.Post(chargesEndpoint, boleto.Charge)
+	response, errResponse := i.Http.Post(chargesEndpoint, boleto.Charge)
 	return i.parseToCharge("GenerateBoleto", response, errResponse)
 }
 
 func (i *Integration) Authorization(card *CardCharge) (*Charge, error) {
-	response, errResponse := i.http.Post(chargesEndpoint, card.Charge)
+	response, errResponse := i.Http.Post(chargesEndpoint, card.Charge)
 	return i.parseToCharge("Authorization", response, errResponse)
 }
 
@@ -62,12 +61,12 @@ func (i *Integration) Capture(chargeID string, amount *Amount) (*Charge, error) 
 		amount,
 	}
 
-	response, errResponse := i.http.Post(endpoint, data)
+	response, errResponse := i.Http.Post(endpoint, data)
 	return i.parseToCharge("Capture", response, errResponse)
 }
 
 func (i *Integration) GetCharge(chargeID string) (*Charge, error) {
-	response, errResponse := i.http.Get(chargesEndpoint+"/"+chargeID, nil)
+	response, errResponse := i.Http.Get(chargesEndpoint+"/"+chargeID, nil)
 	return i.parseToCharge("GetCharge", response, errResponse)
 }
 
@@ -80,12 +79,12 @@ func (i *Integration) RefundAndCancel(chargeID string, amount *Amount) (*Charge,
 		amount,
 	}
 
-	response, errResponse := i.http.Post(endpoint, data)
+	response, errResponse := i.Http.Post(endpoint, data)
 	return i.parseToCharge("RefundAndCancel", response, errResponse)
 }
 
 func (i *Integration) GetChargesByReferenceId(referenceID string) ([]Charge, error) {
-	response, errResponse := i.http.Get(chargesEndpoint, map[string]string{
+	response, errResponse := i.Http.Get(chargesEndpoint, map[string]string{
 		"reference_id": referenceID,
 	})
 
