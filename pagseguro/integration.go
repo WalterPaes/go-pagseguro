@@ -53,15 +53,35 @@ func (i *Integration) Authorization(card *CardCharge) (*Charge, error) {
 	return i.parseToCharge("Authorization", response, errResponse)
 }
 
-func (i *Integration) Capture(chargeID string, capture *Capture) (*Charge, error) {
+func (i *Integration) Capture(chargeID string, amount *Amount) (*Charge, error) {
 	endpoint := fmt.Sprintf("%s/%s%s", chargesEndpoint, chargeID, captureEndpoint)
-	response, errResponse := i.http.Post(endpoint, capture)
+
+	data := struct {
+		*Amount `json:"amount"`
+	}{
+		amount,
+	}
+
+	response, errResponse := i.http.Post(endpoint, data)
 	return i.parseToCharge("Capture", response, errResponse)
 }
 
 func (i *Integration) GetCharge(chargeID string) (*Charge, error) {
 	response, errResponse := i.http.Get(chargesEndpoint+"/"+chargeID, nil)
 	return i.parseToCharge("GetCharge", response, errResponse)
+}
+
+func (i *Integration) RefundAndCancel(chargeID string, amount *Amount) (*Charge, error) {
+	endpoint := fmt.Sprintf("%s/%s%s", chargesEndpoint, chargeID, cancelEndpoint)
+
+	data := struct {
+		*Amount `json:"amount"`
+	}{
+		amount,
+	}
+
+	response, errResponse := i.http.Post(endpoint, data)
+	return i.parseToCharge("RefundAndCancel", response, errResponse)
 }
 
 func (i *Integration) GetChargesByReferenceId(referenceID string) ([]Charge, error) {

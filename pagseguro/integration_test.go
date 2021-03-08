@@ -140,14 +140,12 @@ func TestIntegration_Capture(t *testing.T) {
 	t.Run("SUCCESS", func(t *testing.T) {
 		chargeID := "CHAR_D0292102-5E22-4F5A-9C4F-52C22F9E978B"
 		status := "PAID"
-		capture := &Capture{
-			&Amount{
-				Value:    1000,
-				Currency: "BRL",
-			},
+		amount := &Amount{
+			Value:    1000,
+			Currency: "BRL",
 		}
 
-		newCapture, err := integration.Capture(chargeID, capture)
+		newCapture, err := integration.Capture(chargeID, amount)
 		if err != nil {
 			t.Fatalf("ERRORS WAS NOT EXPECTED: %s", err.Error())
 		}
@@ -162,7 +160,7 @@ func TestIntegration_Capture(t *testing.T) {
 	})
 
 	t.Run("ERROR", func(t *testing.T) {
-		capture, err := integration.Capture("abc", &Capture{})
+		capture, err := integration.Capture("abc", &Amount{})
 		if err == nil {
 			t.Error("Errors was expected")
 		}
@@ -201,7 +199,66 @@ func TestIntegration_GetCharge(t *testing.T) {
 	})
 }
 
-func TestIntegration_GetChargeByReferenceId(t *testing.T) {
+func TestIntegration_RefundAndCancel(t *testing.T) {
+	integration := getIntegration(t)
+
+	t.Run("SUCCESS: Partial Refund", func(t *testing.T) {
+		chargeID := "CHAR_D0292102-5E22-4F5A-9C4F-52C22F9E978B"
+		status := "PAID"
+		amount := &Amount{
+			Value:    100,
+			Currency: "BRL",
+		}
+
+		charge, err := integration.RefundAndCancel(chargeID, amount)
+		if err != nil {
+			t.Fatalf("ERRORS WAS NOT EXPECTED: %s", err.Error())
+		}
+
+		if charge.ID != chargeID {
+			t.Errorf("Expected: %s, Got: %s", chargeID, charge.ID)
+		}
+
+		if charge.Status != status {
+			t.Errorf("Expected: %s, Got: %s", status, charge.Status)
+		}
+	})
+
+	t.Run("SUCCESS: Total Refund", func(t *testing.T) {
+		chargeID := "CHAR_D0292102-5E22-4F5A-9C4F-52C22F9E978B"
+		status := "CANCELED"
+		amount := &Amount{
+			Value:    400,
+			Currency: "BRL",
+		}
+
+		charge, err := integration.RefundAndCancel(chargeID, amount)
+		if err != nil {
+			t.Fatalf("ERRORS WAS NOT EXPECTED: %s", err.Error())
+		}
+
+		if charge.ID != chargeID {
+			t.Errorf("Expected: %s, Got: %s", chargeID, charge.ID)
+		}
+
+		if charge.Status != status {
+			t.Errorf("Expected: %s, Got: %s", status, charge.Status)
+		}
+	})
+
+	t.Run("ERROR", func(t *testing.T) {
+		refund, err := integration.RefundAndCancel("CHAR_A0000000-0A00-0A0A-0A0A-00A00A0A000A", &Amount{})
+		if err == nil {
+			t.Error("Errors was expected")
+		}
+
+		if len(refund.ErrorMessages) < 1 {
+			t.Errorf("Errors was expected")
+		}
+	})
+}
+
+func TestIntegration_GetChargesByReferenceId(t *testing.T) {
 	integration := getIntegration(t)
 
 	t.Run("SUCCESS", func(t *testing.T) {
