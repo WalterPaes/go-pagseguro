@@ -8,10 +8,9 @@ GoPagSeguro
   This Lib was developed for implement some features of the new PagSeguro's api using Go Lang
 </h4>
 
-## Usage
-Import in project
-```go
-import "github.com/WalterPaes/GoPagSeguro/pagseguro"
+## Import and Usage
+```
+go get github.com/WalterPaes/go-pagseguro
 ```
 
 ### Create a New Integration
