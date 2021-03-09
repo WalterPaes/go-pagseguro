@@ -1,16 +1,24 @@
 package pagseguro
 
+// Boleto has data to generate boleto
 type Boleto struct {
-	DueDate          string                  `json:"due_date,omitempty"`
+	// DueDate of boleto
+	DueDate string `json:"due_date,omitempty"`
+	// InstructionLines of boleto
 	InstructionLines *BoletoInstructionLines `json:"instruction_lines,omitempty"`
-	*Holder          `json:"holder,omitempty"`
+	// Holder information
+	*Holder `json:"holder,omitempty"`
 }
 
+// BoletoInstructionLines of boleto
 type BoletoInstructionLines struct {
+	// Line1 is first line about boleto
 	Line1 string `json:"line_1,omitempty"`
+	// Line2 is second line about boleto
 	Line2 string `json:"line_2,omitempty"`
 }
 
+// BoletoCharge is a specific struct to boleto charge
 type BoletoCharge struct {
 	*Charge
 }

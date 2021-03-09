@@ -9,6 +9,7 @@ import (
 	"net/http"
 )
 
+// HttpClient manage http requests
 type HttpClient interface {
 	Get(path string, params map[string]string) ([]byte, error)
 	Post(path string, payload interface{}) ([]byte, error)
