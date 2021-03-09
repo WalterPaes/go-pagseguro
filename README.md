@@ -10,7 +10,7 @@ GoPagSeguro
 
 ## Usage
 ```go
-import "github.com/WalterPaes/GoPagSeguro"
+import "github.com/WalterPaes/GoPagSeguro/pagseguro"
 ```
 
 ### Create a New Integration
