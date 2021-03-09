@@ -3,7 +3,6 @@ package pagseguro
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/joho/godotenv"
 	"log"
 )
 
@@ -15,13 +14,6 @@ var (
 
 type Integration struct {
 	Http HttpClient
-}
-
-func init() {
-	err := godotenv.Load("../.env")
-	if err != nil {
-		log.Fatal("Error loading .env file", err.Error())
-	}
 }
 
 func NewIntegration(url, token, version string) (*Integration, error) {
