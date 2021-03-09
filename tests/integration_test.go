@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"GoPagSeguro/pagseguro"
+	"github.com/WalterPaes/GoPagSeguro/pagseguro"
 	"testing"
 )
 

@@ -1,9 +1,9 @@
 package tests
 
 import (
-	"GoPagSeguro/pagseguro"
 	"encoding/json"
 	"errors"
+	"github.com/WalterPaes/GoPagSeguro/pagseguro"
 	"strings"
 )
 
