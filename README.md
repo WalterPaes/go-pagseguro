@@ -9,10 +9,6 @@ GoPagSeguro
 </h4>
 
 ## Usage
-As a library
-```
-go get "github.com/WalterPaes/GoPagSeguro/pagseguro"
-```
 Import in project
 ```go
 import "github.com/WalterPaes/GoPagSeguro/pagseguro"
