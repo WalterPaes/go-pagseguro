@@ -19,16 +19,16 @@ import "github.com/WalterPaes/GoPagSeguro/pagseguro"
 ```
 
 ### Create a New Integration
-```
+```go
 integration := pagseguro.NewIntegration(
-    {PAGSEG_URL}, 
-    {PAGSEG_TOKEN}, 
-    {PAGSEG_API_VERSION}
+    "PAGSEG_URL", 
+    "PAGSEG_TOKEN", 
+    "PAGSEG_API_VERSION"
 )
 ```
 
 ### Generating a Boleto Charge
-```
+```go
 // Create a boleto charge struct to payload
 boleto := pagseguro.NewBoletoCharge(
 "ex-10001", 
@@ -64,7 +64,7 @@ newCharge, err := integration.GenerateBoleto(boleto)
 ```
 
 ### Create a credit card Authorization
-```
+```go
 // Create a credit card charge struct to payload
 card := pagseguro.NewCardCharge(
     "ex-10001",
@@ -91,7 +91,7 @@ newCharge, err := integration.Authorization(card)
 ```
 
 ### Do a Capture after Pre-Authorization
-```
+```go
 chargeID := "CHAR_344a0907-8aa6-4b7a-943c-897383adf45f"
 amount := &pagseguro.Amount{
     Value: 1000,
@@ -103,7 +103,7 @@ newCapture, err := integration.Capture(chargeID, amount)
 ```
 
 ### Get a charge
-```
+```go
 chargeID := "CHAR_344a0907-8aa6-4b7a-943c-897383adf45f"
 
 // Call function to do request
@@ -111,7 +111,7 @@ newCapture, err := integration.GetCharge(chargeID)
 ```
 
 ### Refund and Cancel
-```
+```go
 chargeID := "CHAR_344a0907-8aa6-4b7a-943c-897383adf45f"
 amount := &pagseguro.Amount{
     Value:    1000,
