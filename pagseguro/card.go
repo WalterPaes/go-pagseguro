@@ -25,33 +25,3 @@ type Holder struct {
 	// Address has data of payment responsible
 	Address *Address `json:"address,omitempty"`
 }
-
-// CardCharge is a specific struct to card charge
-type CardCharge struct {
-	*Charge
-}
-
-func NewCardCharge(
-	refId,
-	description string,
-	installments int,
-	capture bool,
-	recurring *Recurring,
-	amount *Amount,
-	card *Card,
-	notificationUrls []string,
-) *CardCharge {
-	return &CardCharge{&Charge{
-		ReferenceID: refId,
-		Description: description,
-		Amount:      amount,
-		PaymentMethod: &PaymentMethod{
-			Type:         CREDITCARD,
-			Installments: installments,
-			Capture:      capture,
-			Card:         card,
-		},
-		Recurring:        recurring,
-		NotificationUrls: notificationUrls,
-	}}
-}

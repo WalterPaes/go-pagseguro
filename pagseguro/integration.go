@@ -12,34 +12,26 @@ var (
 	cancelEndpoint  = "/cancel"
 )
 
-type Integration struct {
-	Http HttpClient
+type Config struct {
+	Url, Token string
 }
 
-func NewIntegration(url, token, version string) (*Integration, error) {
-	httpClient, err := NewHttpClient(
-		url,
-		map[string]string{
-			"Authorization":     token,
-			"x-api-version":     version,
-			"x-idempotency-key": "",
-		})
+type Integration struct {
+	Http ApiClient
+}
 
-	if err != nil {
-		return nil, err
-	}
-
+func NewIntegration(client ApiClient) (*Integration, error) {
 	return &Integration{
-		Http: httpClient,
+		Http: client,
 	}, nil
 }
 
-func (i *Integration) GenerateBoleto(boleto *BoletoCharge) (*Charge, error) {
+func (i *Integration) BoletoCharge(boleto *boletoCharge) (*Charge, error) {
 	response, errResponse := i.Http.Post(chargesEndpoint, boleto.Charge)
 	return i.parseToCharge("GenerateBoleto", response, errResponse)
 }
 
-func (i *Integration) Authorization(card *CardCharge) (*Charge, error) {
+func (i *Integration) CardCharge(card *cardCharge) (*Charge, error) {
 	response, errResponse := i.Http.Post(chargesEndpoint, card.Charge)
 	return i.parseToCharge("Authorization", response, errResponse)
 }

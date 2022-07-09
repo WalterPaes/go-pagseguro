@@ -1,5 +1,5 @@
-module github.com/WalterPaes/go-pagseguro
+module github.com/WalterPaes/GoPagSeguro
 
 go 1.16
 
-require github.com/WalterPaes/GoPagSeguro v1.0.0
+require github.com/golang/mock v1.6.0

@@ -35,3 +35,71 @@ type Charge struct {
 		Message       string `json:"message,omitempty"`
 	} `json:"error_messages,omitempty"`
 }
+
+// BoletoCharge is a specific struct to boleto charge
+type boletoCharge struct {
+	*Charge
+}
+
+// NewBoletoCharge is a function to create a instance of BoletoCharge
+func NewBoletoCharge(
+	referenceId string, 
+	description string, 
+	currency string,
+	amountValue int, 
+	boleto *Boleto, 
+	notificationUrls... string,
+) *boletoCharge {
+	boletoCharge := &boletoCharge{}
+	boletoCharge.Charge = &Charge{
+		ReferenceID: referenceId,
+		Description: description,
+		Amount:      &Amount{
+			Value: amountValue,
+			Currency: currency,
+		},
+		PaymentMethod: &PaymentMethod{
+			Type:   BOLETO,
+			Boleto: boleto,
+		},
+		NotificationUrls: notificationUrls,
+	} 
+	return boletoCharge
+}
+
+// CardCharge is a specific struct to card charge
+type cardCharge struct {
+	*Charge
+}
+
+// NewCardCharge is a function to create a instance of CardCharge
+func NewCardCharge(
+	referenceId string,
+	description string,
+	currency string,
+	amountValue int,
+	installments int,
+	capture bool,
+	softDescriptor string,
+	card *Card,
+	notificationUrls... string,
+) *cardCharge {
+	cardCharge := &cardCharge{}
+	cardCharge.Charge = &Charge{
+		ReferenceID: referenceId,
+		Description: description,
+		Amount:      &Amount{
+			Value: amountValue,
+			Currency: currency,
+		},
+		PaymentMethod: &PaymentMethod{
+			Type:         CREDITCARD,
+			Installments: installments,
+			Capture:      capture,
+			SoftDescriptor: softDescriptor,
+			Card:         card,
+		},
+		NotificationUrls: notificationUrls,
+	}
+	return cardCharge
+}
