@@ -15,74 +15,74 @@ go get github.com/WalterPaes/go-pagseguro
 
 ### Create a New Integration
 ```go
-integration := pagseguro.NewIntegration(
-    "PAGSEG_URL", 
-    "PAGSEG_TOKEN", 
-    "PAGSEG_API_VERSION"
-)
+config := pagseguro.Config{
+	Url: "PAGSEG_URL",
+	Token: "PAGSEG_TOKEN",
+}
+client := pagseguro.NewClient(config)
+integration := pagseguro.NewIntegration(client)
 ```
 
 ### Generating a Boleto Charge
 ```go
 // Create a boleto charge struct to payload
-boleto := pagseguro.NewBoletoCharge(
-"ex-10001", 
-"Charge reason", 
-&pagseguro.Amount{
-	Value:    100,
-	Currency: "BRL",
-}, &pagseguro.Boleto{
-    DueDate:          "2021-05-01",
-    InstructionLines: &pagseguro.BoletoInstructionLines{
-        Line1: "Instruction One",
-        Line2: "Instruction Two",
-    },
-    Holder: &pagseguro.Holder{
-        Name:    "Walter Paes",
-        TaxID:   "65763916093",
-        Email:   "email@email.com",
-        Address: &pagseguro.Address{
-            Country:    "Brasil",
-            Region:     "São Paulo",
-            RegionCode: "SP",
-            City:       "São Paulo",
-            PostalCode: "88025011",
-            Street:     "Rua Teste",
-            Number:     "123",
-            Locality:   "Pinheiros",
-        },
-    },
-}, nil)
+boletoCharge := pagseguro.NewBoletoCharge(
+	"12345",
+	"Teste",
+	"BRL",
+	1000,
+	&pagseguro.Boleto{
+		DueDate: "2024-12-31",
+		InstructionLines: &pagseguro.BoletoInstructionLines{
+			Line1: "Pagamento Teste3 processado para DESC Fatura",
+			Line2: "Via PagSeguro Teste3",
+		},
+		Holder: &pagseguro.Holder{
+			Name: "Waltin",
+			TaxID: "27908347096",
+			Email: "walter@teste.com",
+			Address: &pagseguro.Address{
+				Street: "Rua Teste",
+				Number: "524545",
+				Locality: "Umarizal",
+				City: "Belém",
+				Region: "Pará",
+				RegionCode: "PA",
+				Country: "Brasil",
+				PostalCode: "88025010",
+			},
+		},
+	},
+)
 
 // Call function to do request
-newCharge, err := integration.GenerateBoleto(boleto)
+newCharge, err := integration.BoletoCharge(boleto)
 ```
 
 ### Create a credit card Authorization
 ```go
 // Create a credit card charge struct to payload
-card := pagseguro.NewCardCharge(
-    "ex-10001",
-    "charge reason",
-    1,
-    false,
-    nil,
-    &pagseguro.Amount{
-        Value:    1000,
-        Currency: "BRL",
-    },
-    &pagseguro.Card{
-        Number:       "5306941322840724",
-        ExpMonth:     "11",
-        ExpYear:      "2022",
-        SecurityCode: "123",
-        Holder:       &pagseguro.Holder{
-            Name:    "Walter Paes",
-        },
-}, nil)
+creditCardCharge = pagseguro.NewCardCharge(
+	"12345",
+	"Teste Card 01",
+	"BRL",
+	108701,
+	2,
+	true,
+	"My store",
+	&pagseguro.Card{
+		Number: "4111111111111111",
+		ExpMonth: "12",
+		ExpYear: "2030",
+		SecurityCode: "123",
+		Holder: &pagseguro.Holder{
+			Name: "Waltin",
+		},
+	},
+)
 
 // Call function to do request
-newCharge, err := integration.Authorization(card)
+newCharge, err := integration.CardCharge(card)
 ```
 
 ### Do a Capture after Pre-Authorization
